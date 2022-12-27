@@ -1,7 +1,8 @@
 import React from "react";
 import { useState, useEffect } from "react";
+import Error from "./Error";
 
-const Formulario = ({setPacientes})=>{
+const Formulario = ({setPacientes, pacientes, paciente})=>{
 
     const [nombre, setNombre] = useState('');
     const [papaMama, setPapaMama] = useState('');
@@ -10,6 +11,25 @@ const Formulario = ({setPacientes})=>{
     const [sintomas, setSintomas] = useState('');
 
     const [error, setError] = useState(false);
+
+    useEffect (()=> {
+
+      if(Object.keys(paciente).length > 0 ){
+        setNombre(paciente.nombre)
+        setPapaMama (paciente.papaMama)
+        setEmail (paciente.email)
+        setFecha (paciente.fecha)
+        setSintomas (paciente.sintomas)
+      } 
+
+    },[paciente])
+    
+    const generarId = () =>{
+
+        const random = Math.random().toString(36).substr(2);
+        const fecha = Date.now().toString(36)
+        return random + fecha
+    }
 
     const handleSubmit = (e) => {
 
@@ -31,13 +51,39 @@ const Formulario = ({setPacientes})=>{
             papaMama,
             email,
             fecha,
-            sintomas
+            sintomas,
+            id: generarId ()
             
         }
 
-        console.log(objetoPaciente)
+        if (paciente.id) {
+            //Editando el registro
+            objetoPaciente.id = paciente.id
 
-        setPacientes(nombre)
+            console.log(objetoPaciente)
+            console.log (paciente)
+
+            const pacientesActualizados = pacientes.map(pacienteState => pacienteState.id === 
+            paciente.id ? objetoPaciente : pacienteState)
+            setPacientes(pacientesActualizados)
+
+        } else {
+
+            objetoPaciente.id = generarId();
+            setPacientes ([...pacientes, objetoPaciente])
+
+        }
+
+        //Reiniciar el form
+
+        setNombre ('')
+        setPapaMama ('')
+        setEmail ('')
+        setEmail ('')
+        setFecha ('')
+        setSintomas ('')
+
+        //setPacientes([...pacientes ,objetoPaciente]);
     }
     
 
@@ -50,13 +96,10 @@ const Formulario = ({setPacientes})=>{
                 <span className="text-bold tex-1xl text-center text-indigo-600">administralos</span>  
             </p>
 
-            <form className=" bg-gray-200 shadow-md rounded-r-lg py-5 px-7 mt-4"   onSubmit={handleSubmit}>
+            <form className=" bg-gray-200 shadow-md rounded-r-lg py-5 px-7 mt-4" onSubmit={handleSubmit}>
 
-            {error && (<div>
-                <p className=" bg-red-700 text-white rounded-xl font-bold mb-3 py-3 text-center uppercase">
-                    Todos los campos se deben completar
-                </p>
-            </div>)}
+            {error && <Error> <p>todos los campos son obligatorios</p> </Error>}
+
                 <div className=" mt-5 ">
                     <label  htmlFor="mascota" className=" block text-gray-700 uppercase "> Nombre de la mascota </label>
                     <input id="mascota" type="text" className=" border-2 w-full mt-2 py-2 px-2 placeholder-gray-400 rounded-md"
@@ -94,6 +137,7 @@ const Formulario = ({setPacientes})=>{
 
                 <input type="submit"
                 className=" bg-indigo-600 w-full text-white border-2 rounded-md mt-2"
+                value={paciente.id ? 'Editar Paciente': 'Agregar Paciente'}
                 />
                 
                
