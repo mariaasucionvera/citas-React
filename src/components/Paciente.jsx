@@ -1,6 +1,18 @@
 import React from 'react'
 
-function Paciente({paciente, setPaciente}) {
+const Paciente = ({paciente, setPaciente, eliminarPaciente}) => {
+    const {nombre, papaMama, email, fecha, sintomas, id} = paciente
+    const handleEliminar = () => {
+        const respuesta = confirm ("deseas eliminar este paciente?")
+
+        if (respuesta) {
+           
+            eliminarPaciente(id)
+
+        }
+        
+    }
+    
   return (
     <div className=" bg-gray-200 mx-4 my-4 shadow-md px-5 py-6 rounded-md">
         <p className=" font-bold text-gray-700 uppercase">Nombre:
@@ -33,6 +45,7 @@ function Paciente({paciente, setPaciente}) {
             
             <button type='button' 
             className=' py-2 px-10 bg-red-800 hover:bg-red-800 text-white font-bold uppercase rounded-md'
+            onClick={handleEliminar}
             > eliminar</button>
 
         </div>
